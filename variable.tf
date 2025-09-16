@@ -41,17 +41,9 @@ variable "node_groups" {
     general = {
       instance_types = ["t3.small"]
       scaling_config = {
-        desired_capacity = 1
-        min_size         = 1
-        max_size         = 2
-      }
-    }
-    gen = {
-      instance_types = ["t3.medium"]
-      scaling_config = {
-        desired_capacity = 1
-        min_size         = 1
-        max_size         = 1
+        desired_capacity = 3
+        min_size         = 2
+        max_size         = 4
       }
     }
   }
