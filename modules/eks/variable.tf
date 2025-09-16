@@ -19,3 +19,7 @@ variable "node_groups" {
     })}))
   
 }
+
+variable "disk_size" {
+  type = number
+}

@@ -14,6 +14,7 @@ module "eks" {
 
   cluster_version    = var.cluster_version
   node_groups        = var.node_groups
+  disk_size          = var.disk_size
   private_subnet_ids = module.vpc.private_subnet_ids
   depends_on         = [module.vpc]
 }
