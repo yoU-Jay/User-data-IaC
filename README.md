@@ -30,7 +30,7 @@ User-data-IaC/
 ├── .gitignore                     # Git ignore patterns
 ├── .terraform.lock.hcl            # Terraform dependency lock
 ├── LICENSE                        # MIT License
-└── README.md                      # This file
+└── README.md                      # This file give the brief of proj.
 ```
 
 ## 🏗️ Architecture Overview
