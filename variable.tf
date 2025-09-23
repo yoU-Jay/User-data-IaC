@@ -37,16 +37,26 @@ variable "node_groups" {
       min_size         = number
       max_size         = number
   }) }))
-  default = {
-    general = {
-      instance_types = ["t3.small"]
-      scaling_config = {
-        desired_capacity = 3
-        min_size         = 2
-        max_size         = 4
+  # default = {
+  #   general = {
+  #     instance_types = ["t3.small"]
+  #     scaling_config = {
+  #       desired_capacity = 3
+  #       min_size         = 2
+  #       max_size         = 4
+  #     }
+  #   }
+  # }
+    default = {
+      general = {
+        instance_types = ["c7i-flex.large"]
+        scaling_config = {
+          desired_capacity = 2
+          min_size         = 1
+          max_size         = 3
+        }
       }
     }
-  }
 
 }
 
