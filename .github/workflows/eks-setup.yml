@@ -15,6 +15,7 @@ on:
 permissions:
     contents: read
     pull-requests: write
+    security-events: write
 
 env:
     AWS_ACCESS_KEY_ID : ${{ secrets.AWS_ACCESS_KEY_ID}}
@@ -22,8 +23,40 @@ env:
     BUCKET_TF_STATE : ${{ secrets.BUCKET_TF_STATE}}
 
 jobs:
+    security-scan:
+        runs-on: ubuntu-latest
+        name: Security Scanning
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Run Terrascan
+              uses: tenable/terrascan-action@main
+              with:
+                iac_type: 'terraform'
+                iac_version: 'v15'
+                policy_type: 'aws'
+                only_warn: true
+                sarif_upload: true
+
+            - name: Run Checkov
+              uses: bridgecrewio/checkov-action@master
+              with:
+                directory: .
+                framework: terraform
+                output_format: sarif
+                output_file_path: checkov-report.sarif
+                soft_fail: true
+
+            - name: Upload Checkov SARIF report
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                sarif_file: checkov-report.sarif
+              
+
     terraform:
         runs-on: ubuntu-latest
+        needs: security-scan
 
         steps:
             - name: Checkout code
@@ -40,18 +73,14 @@ jobs:
             - name: Terraform Format without checking
               run: terraform fmt     
 
-            # Checks that all Terraform configuration files adhere to a canonical format
             - name: Terraform Format
               run: terraform fmt -check
 
-            #Validates the syntax and internal consistency of Terraform configuration files.
             - name: Terraform validate
               run: terraform validate
 
-            # Generates an execution plan for Terraform
             - name: Terraform Plan
               run: terraform plan -input=false
-            
 
             - name: Terraform Apply
               run: | 
@@ -61,18 +90,3 @@ jobs:
                 echo "Invalid action"
                 exit 1
                 fi
-
-    terrascan_job:
-                  runs-on: ubuntu-latest
-                  name: terrascan-action
-                  steps:
-                  - name: Checkout repository
-                    uses: actions/checkout@v2
-                  - name: Run Terrascan
-                    id: terrascan
-                    uses: tenable/terrascan-action@main
-                    with:
-                      iac_type: 'terraform'
-                      iac_version: 'v14'
-                      policy_type: 'aws'
-                      only_warn: true
